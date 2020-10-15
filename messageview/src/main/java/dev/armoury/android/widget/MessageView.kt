@@ -1,5 +1,6 @@
 package dev.armoury.android.widget
 
+import android.animation.Animator
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
@@ -13,9 +14,11 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
 import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import dev.armoury.android.widget.data.INVALID_VALUE
 import dev.armoury.android.widget.data.MessageModel
 import dev.armoury.android.widget.databinding.ViewMessageBinding
+import dev.armoury.android.widget.utils.SimpleAnimatorListener
 
 // TODO Show loading indicator
 class MessageView @JvmOverloads constructor(
@@ -25,6 +28,8 @@ class MessageView @JvmOverloads constructor(
     private var binding: ViewMessageBinding
 
     private var externalCallbacks : Callbacks? = null
+
+    private var animationRepeatCount : Int = LottieDrawable.INFINITE
 
     private var messageModel: MessageModel? = null
 
@@ -144,6 +149,15 @@ class MessageView @JvmOverloads constructor(
                     lottieFileName != null -> {
                 visibility = View.VISIBLE
                 setAnimation(lottieFileName)
+                repeatCount = animationRepeatCount
+                binding.animation.addAnimatorListener(object : SimpleAnimatorListener() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        externalCallbacks?.onAnimationEnd()
+                    }
+                })
+                binding.animation.addAnimatorUpdateListener { valueAnimator ->
+                    externalCallbacks?.onAnimationProgress(valueAnimator.animatedValue as Float)
+                }
                 playAnimation()
             }
             else -> visibility = View.GONE
@@ -160,7 +174,7 @@ class MessageView @JvmOverloads constructor(
         }
     }
 
-    private fun TextView.updateState(text: String?, textRes: Int) {
+    private fun TextView.updateState(text: CharSequence? = null, textRes: Int = INVALID_VALUE) {
         var visibility = View.VISIBLE
         when {
             text != null -> this.text = text
@@ -174,6 +188,7 @@ class MessageView @JvmOverloads constructor(
         attrs?.let {
             val a: TypedArray = context.obtainStyledAttributes(it, R.styleable.MessageView)
             val indexCount = a.indexCount
+            @State var state : Int? = null
 
             for (i in 0 until indexCount) {
                 when (val attr = a.getIndex(i)) {
@@ -230,15 +245,65 @@ class MessageView @JvmOverloads constructor(
                         binding.button.width = a.getDimensionPixelOffset(attr, 100)
                     R.styleable.MessageView_mv_button_height ->
                         binding.button.height = a.getDimensionPixelOffset(attr, 40)
+                    //  State
+                    R.styleable.MessageView_mv_state -> state = a.getInt(attr, States.HIDE)
                 }
             }
             binding.button.setTextColor(buttonTextColor)
+            state?.let { updateState(it) }
             a.recycle()
         }
     }
 
+    private fun updateState(@State state: Int) {
+        var visibility = View.VISIBLE
+        var loadingIndicatorVisibility = View.GONE
+        when (state) {
+            States.NORMAL -> {
+                updateTextColors(titleNormalColor, descNormalColor)
+                binding.textTitle.updateState(text = titleNormal)
+                binding.textDescription.updateState(text = descNormal)
+                binding.image.updateState(normalImageRes)
+            }
+            States.LOADING -> {
+                updateTextColors(titleLoadingColor, descLoadingColor)
+                if (loadingImageRes == INVALID_VALUE && lottieFileName.isNullOrEmpty()){
+                    loadingIndicatorVisibility = View.VISIBLE
+                }
+                binding.textTitle.updateState(text = titleLoading)
+                binding.textDescription.updateState(text = descLoading)
+                binding.image.updateState(loadingImageRes)
+            }
+            States.ERROR -> {
+                updateTextColors(titleErrorColor, descErrorColor)
+                binding.textTitle.updateState(text = titleError)
+                binding.textDescription.updateState(text = descError)
+                binding.image.updateState(errorImageRes)
+            }
+            States.HIDE -> visibility = View.GONE
+        }
+        binding.animation.updateState(state, lottieFileName)
+        binding.button.updateState() // TODO
+        this.visibility = visibility
+        binding.progress.visibility = loadingIndicatorVisibility
+    }
+
     interface Callbacks {
+
         fun onButtonClicked(messageModel: MessageModel? = null)
+
+        fun onAnimationEnd()
+
+        fun onAnimationProgress(progress: Float)
+    }
+
+    open class SimpleCallbacks : Callbacks {
+
+        override fun onButtonClicked(messageModel: MessageModel?) {}
+
+        override fun onAnimationEnd() {}
+
+        override fun onAnimationProgress(progress: Float) {}
     }
 
     @Retention(AnnotationRetention.SOURCE)
