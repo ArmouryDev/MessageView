@@ -248,7 +248,7 @@ class MessageView @JvmOverloads constructor(
                     //  State
                     R.styleable.MessageView_mv_state -> state = a.getInt(attr, States.HIDE)
                     //  Repeat
-                    R.styleable.MessageView_mv_repeat_animation -> animationRepeatCount = if (a.getBoolean(attr, true)) LottieDrawable.INFINITE else 1
+                    R.styleable.MessageView_mv_repeat_animation -> animationRepeatCount = if (a.getBoolean(attr, true)) LottieDrawable.INFINITE else 0
                 }
             }
             binding.button.setTextColor(buttonTextColor)
