@@ -8,14 +8,14 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
 
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 22
-        versionName "0.9.13"
+        versionCode 23
+        versionName "0.9.14"
     }
 
     buildTypes {
