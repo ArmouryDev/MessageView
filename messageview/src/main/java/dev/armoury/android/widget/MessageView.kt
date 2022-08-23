@@ -285,7 +285,7 @@ open class MessageView @JvmOverloads constructor(
             States.HIDE -> visibility = View.GONE
         }
         binding.animation.updateState(state, lottieFileName)
-        binding.button.updateState() // TODO
+        binding.button.updateState()
         this.visibility = visibility
         binding.progress.visibility = loadingIndicatorVisibility
     }
