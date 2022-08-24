@@ -21,11 +21,11 @@ import dev.armoury.android.widget.databinding.ViewMessageBinding
 import dev.armoury.android.widget.utils.SimpleAnimatorListener
 
 // TODO Show loading indicator
-class MessageView @JvmOverloads constructor(
+open class MessageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayoutCompat(context, attrs, defStyleAttr) {
 
-    private var binding: ViewMessageBinding
+    protected var binding: ViewMessageBinding
 
     private var externalCallbacks : Callbacks? = null
 
@@ -89,7 +89,7 @@ class MessageView @JvmOverloads constructor(
         binding.animation.cancelAnimation()
     }
 
-    fun updateState(messageModel: MessageModel?) {
+    open fun updateState(messageModel: MessageModel?) {
         this.messageModel = messageModel
         messageModel?.let {
             var visibility = View.VISIBLE
@@ -124,7 +124,7 @@ class MessageView @JvmOverloads constructor(
         }
     }
 
-    fun setCallbacks(externalCallbacks : Callbacks) {
+    open fun setCallbacks(externalCallbacks : Callbacks) {
         this.externalCallbacks = externalCallbacks
     }
 
@@ -285,7 +285,7 @@ class MessageView @JvmOverloads constructor(
             States.HIDE -> visibility = View.GONE
         }
         binding.animation.updateState(state, lottieFileName)
-        binding.button.updateState() // TODO
+        binding.button.updateState() //
         this.visibility = visibility
         binding.progress.visibility = loadingIndicatorVisibility
     }
@@ -309,7 +309,7 @@ class MessageView @JvmOverloads constructor(
     }
 
     @Retention(AnnotationRetention.SOURCE)
-    @IntDef(States.NORMAL, States.LOADING, States.ERROR, States.HIDE)
+    @IntDef(States.NORMAL, States.LOADING, States.ERROR, States.HIDE, States.COUNTDOWN)
     annotation class State
 
     class States {
@@ -319,7 +319,8 @@ class MessageView @JvmOverloads constructor(
             const val NORMAL = 0
             const val LOADING = 1
             const val ERROR = 2
-            const val HIDE = 3
+            const val COUNTDOWN = 3
+            const val HIDE = 5
 
         }
 

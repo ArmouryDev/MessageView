@@ -3,6 +3,7 @@ package dev.armoury.android.widget.data
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import dev.armoury.android.widget.MessageView
+import java.util.Date
 
 internal const val INVALID_VALUE = -1
 
@@ -14,7 +15,8 @@ class MessageModel(
     @StringRes var descriptionTextRes: Int = INVALID_VALUE,
     var descriptionText: String? = null,
     @StringRes var buttonTextRes: Int = INVALID_VALUE,
-    var buttonText: String? = null
+    var buttonText: String? = null,
+    var startAt: Date?
 ) {
 
     fun reset() {
@@ -25,6 +27,7 @@ class MessageModel(
         descriptionText = null
         buttonTextRes = INVALID_VALUE
         buttonText = null
+        startAt = null
     }
 
     fun hasTitle() = titleText != null || titleTextRes != INVALID_VALUE
