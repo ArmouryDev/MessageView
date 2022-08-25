@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -12,7 +13,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.airbnb.lottie.LottieAnimationView
@@ -26,7 +27,7 @@ import dev.armoury.android.widget.utils.SimpleAnimatorListener
 // TODO Show loading indicator
 open class MessageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : LinearLayoutCompat(context, attrs, defStyleAttr) {
 
     protected var binding: ViewMessageBinding
 
@@ -72,8 +73,8 @@ open class MessageView @JvmOverloads constructor(
 
 
     init {
-//        orientation = VERTICAL
-//        gravity = Gravity.CENTER
+        orientation = VERTICAL
+        gravity = Gravity.CENTER
         binding = DataBindingUtil.inflate(
             LayoutInflater.from(context),
             R.layout.view_message,
