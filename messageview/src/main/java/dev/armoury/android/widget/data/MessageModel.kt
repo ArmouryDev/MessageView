@@ -18,7 +18,9 @@ class MessageModel(
     var buttonText: String? = null,
     @ColorRes
     var buttonColor: Int = INVALID_VALUE,
-    var remainedTime : Long = 0
+    var remainedTime : Long = 0,
+    @DrawableRes
+    var buttonIconRes : Int = INVALID_VALUE
 ) {
 
     fun reset() {
@@ -30,6 +32,7 @@ class MessageModel(
         buttonTextRes = INVALID_VALUE
         buttonText = null
         buttonColor = INVALID_VALUE
+        buttonIconRes = INVALID_VALUE
         remainedTime = 0
     }
 
