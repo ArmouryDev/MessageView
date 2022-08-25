@@ -2,19 +2,22 @@ package dev.armoury.android.widget
 
 import android.animation.Animator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
+import com.google.android.material.button.MaterialButton
 import dev.armoury.android.widget.data.INVALID_VALUE
 import dev.armoury.android.widget.data.MessageModel
 import dev.armoury.android.widget.databinding.ViewMessageBinding
@@ -23,7 +26,7 @@ import dev.armoury.android.widget.utils.SimpleAnimatorListener
 // TODO Show loading indicator
 open class MessageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : LinearLayoutCompat(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     protected var binding: ViewMessageBinding
 
@@ -69,8 +72,8 @@ open class MessageView @JvmOverloads constructor(
 
 
     init {
-        orientation = VERTICAL
-        gravity = Gravity.CENTER
+//        orientation = VERTICAL
+//        gravity = Gravity.CENTER
         binding = DataBindingUtil.inflate(
             LayoutInflater.from(context),
             R.layout.view_message,
@@ -118,6 +121,7 @@ open class MessageView @JvmOverloads constructor(
                 messageModel.descriptionTextRes
             )
             binding.button.updateState(messageModel.buttonText, messageModel.buttonTextRes)
+            binding.button.updateButtonBackground(messageModel.buttonColor, messageModel.buttonIconRes)
             binding.animation.updateState(messageModel.state, lottieFileName)
             this.visibility = visibility
             binding.progress.visibility = loadingIndicatorVisibility
@@ -182,6 +186,15 @@ open class MessageView @JvmOverloads constructor(
             else -> visibility = View.GONE
         }
         this.visibility = visibility
+    }
+
+    private fun MaterialButton.updateButtonBackground(@ColorRes colorRes: Int, @DrawableRes iconRes: Int){
+        if(colorRes != INVALID_VALUE){
+            backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(context, colorRes))        }
+        if(iconRes != INVALID_VALUE){
+            setIconResource(iconRes)
+        }
     }
 
     private fun setAttributes(attrs: AttributeSet?) {
